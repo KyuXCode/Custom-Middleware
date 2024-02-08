@@ -9,7 +9,7 @@ public class Program
 
         app.MapGet("/", () => "Not Authorized!");
 
-        app.UseMiddleware<MyMiddleware>();
+        app.UseMyMiddleware();
 
         app.Run(async context => {
             await context.Response.WriteAsync("Authorized!");
