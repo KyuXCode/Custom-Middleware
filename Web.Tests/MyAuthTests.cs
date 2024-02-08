@@ -35,19 +35,36 @@ public class MyAuthTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task MiddlewareTest_FailWhenNotAuthenticated()
+    public async Task WithoutParams()
     {
         var response = await host.GetTestClient().GetAsync("/");
         Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("Not Authorized!", result);
     }
-
+    
     [Fact]
-    public async Task MiddlewareTest_Authenticated()
+    public async Task WithMissingParams()  
+    {
+        var response = await host.GetTestClient().GetAsync("/?username=user1");
+        Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Not Authorized!", result);
+    }
+    
+    [Fact]
+    public async Task WithCorrectParams()
     {
         var response = await host.GetTestClient().GetAsync("/?username=user1&password=password1");
         var result = await response.Content.ReadAsStringAsync();
         Assert.Equal("Authenticated!", result);
+    }
+    
+    [Fact]
+    public async Task WithIncorrectParams()
+    {
+        var response = await host.GetTestClient().GetAsync("/?username=user1&password=password2");
+        var result = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Not Authorized!", result);
     }
 }
